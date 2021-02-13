@@ -1,6 +1,6 @@
 package in.adwait.ManagerDashboard.services;
 
-import in.adwait.ManagerDashboard.configurations.ManagementRepository;
+import in.adwait.ManagerDashboard.repositories.ManagerRepository;
 import in.adwait.ManagerDashboard.model.Manager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,10 +17,10 @@ import java.util.Optional;
 @Service
 public class ManagerService implements UserDetailsService {
 
-    private ManagementRepository repository;
+    private ManagerRepository repository;
 
     @Autowired
-    public ManagerService(ManagementRepository repository) {
+    public ManagerService(ManagerRepository repository) {
         this.repository = repository;
     }
 

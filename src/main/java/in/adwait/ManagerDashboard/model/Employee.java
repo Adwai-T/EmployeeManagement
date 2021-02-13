@@ -8,11 +8,11 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
 @Entity
-@Table(name="managers", schema = "managers")
+@Table(name="employees", schema = "employees")
 @Validated
 @NoArgsConstructor @AllArgsConstructor
-@Setter @Getter @ToString
-public class Manager {
+@Getter @Setter @ToString
+public class Employee {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -26,8 +26,11 @@ public class Manager {
     private String emailId;
 
     @NotBlank
-    private String password;
+    private String role;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Long managerId;
 
     @NotBlank
-    private String role;
+    private String joiningDate;
 }
