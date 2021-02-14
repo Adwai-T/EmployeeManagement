@@ -16,6 +16,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("api/v1/employee")
+@CrossOrigin(origins = "http://localhost:4200")
 public class EmployeeController {
 
     private EmployeeRepository employeeRepository;
@@ -58,6 +59,15 @@ public class EmployeeController {
                             .body(employees);
             }
         }
+
+        if((id == null && managerId == null) || (id.equals("") && managerId.equals(""))) {
+            List<Employee> employees = employeeRepository.findAll();
+
+            return ResponseEntity
+                        .status(HttpStatus.OK)
+                        .body(employees);
+        }
+
         return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
                     .body(null);

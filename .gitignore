@@ -35,3 +35,6 @@ build/
 ### Compiled Files ###
 /target/
 /.idea
+
+### Other ###
+application-dev.properties
