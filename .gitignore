@@ -36,5 +36,3 @@ build/
 /target/
 /.idea
 
-### Other ###
-application-dev.properties
