@@ -6,6 +6,7 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name="employees", schema = "employees")
@@ -33,4 +34,10 @@ public class Employee {
 
     @NotBlank
     private String joiningDate;
+
+    @NotBlank
+    private String gender;
+
+    @NotNull
+    private Long salary;
 }

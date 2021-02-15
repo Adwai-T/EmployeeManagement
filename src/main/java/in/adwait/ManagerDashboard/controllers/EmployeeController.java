@@ -111,15 +111,44 @@ public class EmployeeController {
                     .body(null);
     }
 
-    @PutMapping("")
+    @PatchMapping("")
     private ResponseEntity<Employee> updateEmployee(
             @Valid @RequestBody Employee updatedEmployee
     ){
-        Optional<Employee> employee = employeeRepository.findById(updatedEmployee.getId());
+        Optional<Employee> employee = employeeRepository.findByEmailId(updatedEmployee.getEmailId());
 
         try{
             if(employee.isPresent()) {
-                updatedEmployee.setId(employee.get().getId());
+                employeeRepository.delete(employee.get());
+                employeeRepository.save(updatedEmployee);
+
+                return ResponseEntity
+                        .status(HttpStatus.ACCEPTED)
+                        .body(updatedEmployee);
+            }else {
+                return ResponseEntity
+                            .status(HttpStatus.CONFLICT)
+                            .body(null);
+            }
+        }catch (Exception e) { }
+
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(null);
+
+    }
+
+
+
+    @PutMapping("")
+    private ResponseEntity<Employee> updateOrAddEmployee(
+            @Valid @RequestBody Employee updatedEmployee
+    ){
+        Optional<Employee> employee = employeeRepository.findByEmailId(updatedEmployee.getEmailId());
+
+        try{
+            if(employee.isPresent()) {
+                employeeRepository.delete(employee.get());
             }
             employeeRepository.save(updatedEmployee);
 
