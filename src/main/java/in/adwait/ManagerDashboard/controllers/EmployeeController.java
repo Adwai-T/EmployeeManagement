@@ -2,6 +2,7 @@ package in.adwait.ManagerDashboard.controllers;
 
 import in.adwait.ManagerDashboard.Utilities.JwtUtilities;
 import in.adwait.ManagerDashboard.model.Employee;
+import in.adwait.ManagerDashboard.model.ExceptionMessages;
 import in.adwait.ManagerDashboard.model.Manager;
 import in.adwait.ManagerDashboard.repositories.EmployeeRepository;
 import in.adwait.ManagerDashboard.repositories.ManagerRepository;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RestController
@@ -209,18 +209,18 @@ public class EmployeeController {
                 return ResponseEntity
                         .status(HttpStatus.ACCEPTED)
                         .body("Employee with id " + id + " deleted successfully.");
-            }catch (NoSuchElementException e) { }
+            }catch (Exception e) { }
         }
         return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
                     .body("No such Employee found. Could not delete employee");
     }
 
-//    @ExceptionHandler(NoSuchElementException.class)
-//    public ResponseEntity<ExceptionMessages> noSuchElementException() {
-//
-//        return ResponseEntity
-//                    .status(HttpStatus.NOT_FOUND)
-//                    .body(new ExceptionMessages("NoSuchElementException", "No Such Emploee Found"));
-//    }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ExceptionMessages> hasException() {
+
+        return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(new ExceptionMessages("NoSuchElementException", "No Such Employee Found"));
+    }
 }
