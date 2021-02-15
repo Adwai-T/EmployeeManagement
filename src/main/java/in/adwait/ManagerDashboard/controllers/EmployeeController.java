@@ -2,7 +2,9 @@ package in.adwait.ManagerDashboard.controllers;
 
 import in.adwait.ManagerDashboard.Utilities.JwtUtilities;
 import in.adwait.ManagerDashboard.model.Employee;
+import in.adwait.ManagerDashboard.model.Manager;
 import in.adwait.ManagerDashboard.repositories.EmployeeRepository;
+import in.adwait.ManagerDashboard.repositories.ManagerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -21,16 +23,23 @@ public class EmployeeController {
 
     private EmployeeRepository employeeRepository;
     private JwtUtilities jwtUtilities;
+    private ManagerRepository managerRepository;
 
     @Autowired
-    public EmployeeController(EmployeeRepository employeeRepository, JwtUtilities jwtUtilities) {
+    public EmployeeController(
+            EmployeeRepository employeeRepository,
+            JwtUtilities jwtUtilities,
+            ManagerRepository managerRepository) {
         this.employeeRepository = employeeRepository;
         this.jwtUtilities = jwtUtilities;
+        this.managerRepository = managerRepository;
     }
 
     @GetMapping("")
     private ResponseEntity getEmployee(
             @RequestParam(value = "id", defaultValue = "") Long id,
+            @RequestParam(value = "email_id", defaultValue = "") String emailId,
+            @RequestParam(value = "manager_email_id", defaultValue = "") String managerEmailId,
             @RequestParam(value = "manager_id", defaultValue = "") Long managerId,
             @RequestParam(value = "page", defaultValue = "0") Integer pageNumber,
             @RequestParam(value = "size", defaultValue = "0") Integer size
@@ -45,7 +54,34 @@ public class EmployeeController {
             }
         }
 
-        if(managerId != null && !managerId.equals("")) {
+        if(emailId != null && !emailId.equals("")){
+            Optional<Employee> employee = employeeRepository.findByEmailId(emailId);
+
+            if(employee.isPresent()) {
+                return ResponseEntity
+                        .status(HttpStatus.OK)
+                        .body(employee.get());
+            }
+        }
+
+        if(managerEmailId != null && !managerEmailId.equals("")) {
+            Optional<Manager> manager = managerRepository.findByEmailId(managerEmailId);
+            if(manager.isPresent()) {
+                Optional<List<Employee>> employees = employeeRepository.findAllByManagerId(manager.get().getId());
+
+                if(employees.isPresent()) {
+                    return ResponseEntity
+                                .status(HttpStatus.OK)
+                                .body(employees);
+                }else {
+                    return ResponseEntity
+                                .status(HttpStatus.NOT_FOUND)
+                                .body(null);
+                }
+            }
+        }
+
+        if(managerId != null) {
             Optional<List<Employee>> employees;
             if(size != 0) {
                  employees = employeeRepository.findAllByManagerId(managerId, PageRequest.of(pageNumber, size));
@@ -87,9 +123,7 @@ public class EmployeeController {
             try{
                 if(employeeOptional.isEmpty()) {
                     //-------Check
-                    System.out.println(jwt);
                     String managerId = jwtUtilities.extractId(jwt);
-                    System.out.println("ManagerId post Mapping  -> " + managerId);
                     employee.setManagerId(Long.parseLong(managerId));
 
                     employeeRepository.save(employee);
